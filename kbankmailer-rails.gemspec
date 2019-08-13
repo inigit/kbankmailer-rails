@@ -20,9 +20,9 @@ Gem::Specification.new do |s|
   ]
   s.rdoc_options = ["--charset=UTF-8"]
 
-  s.add_dependency('actionmailer', ">= 3.0.0")
+  s.add_dependency('actionmailer', "~> 5.2.1")
 
-  s.add_dependency('faraday')
+  s.add_dependency('faraday', "~> 0.15.4")
 
   s.add_development_dependency("rake")
 

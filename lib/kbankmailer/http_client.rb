@@ -3,7 +3,7 @@ require 'json'
 
 module Kbankmailer
   class HttpClient
-    attr_accessor :partner_id, :partner_secret, :partner_host
+    attr_accessor :partner_id, :partner_secret, :partner_url
 
     DEFAULTS = {
         :partner_id => 'partner_id',
@@ -11,11 +11,10 @@ module Kbankmailer
         :request_timeout => 5
     }
 
-    def initialize(partner_id, partner_secret, partner_host, options = {})
+    def initialize(partner_id, partner_secret, partner_url, options = {})
       @partner_id = partner_id
       @partner_secret = partner_secret
-      @partner_host = partner_host
-      @http = build_http
+      @partner_url = partner_url
     end
 
     def deliver(message_hash = {})
@@ -25,7 +24,7 @@ module Kbankmailer
                              "message": message_hash[:html_part]
 
                          })
-      Faraday.new(self.partner_host.to_s, request: { timeout: DEFAULTS[:request_timeout] }) do |conn|
+      Faraday.new(self.partner_url.to_s, request: { timeout: DEFAULTS[:request_timeout] }) do |conn|
         conn.request :retry, max: 2, interval: 1,
                      interval_randomness: 0.5, backoff_factor: 2,
                      exceptions: [CustomException, 'Timeout::Error']
@@ -35,7 +34,7 @@ module Kbankmailer
         conn.headers[DEFAULTS[:partner_secret]] =  self.partner_secret.to_s
         conn.headers['Content-Type'] = 'application/json'
         response = conn.post('/proxy_send_email', data)
-        raise CustomException if response.status == 502
+        raise CustomException if response.status == 502 || response.status == 501
       end
     end
 
