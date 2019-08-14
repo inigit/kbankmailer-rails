@@ -1,5 +1,6 @@
 require 'active_support/rescuable'
 require 'action_mailer'
+require 'mail/kbankmailer'
 
 module KbankmailerRails
   module ActionMailerExtensions
