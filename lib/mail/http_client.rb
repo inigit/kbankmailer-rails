@@ -21,10 +21,12 @@ module Mail
 
     def deliver(message = {})
 
+      emails = message.to.join(",")
+
       data =  {
           "partner_id": self.partner_id.to_s,
           "partner_secret": self.partner_secret.to_s,
-          "email": message.to,
+          "email": emails,
           "topic": message.subject,
           "message": message.body.encoded
       }
@@ -43,7 +45,7 @@ module Mail
 
         Rails.logger.info message: "Send Email Request",
                           email: message.to,
-                          topic: message.subject,
+                          topic: emails,
                           body: message.body.encoded
         raise Mail::CustomException if response.status == 502 || response.status == 501
       end
